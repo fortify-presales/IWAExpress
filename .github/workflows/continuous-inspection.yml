@@ -16,7 +16,8 @@ on:
     - 'Jenkinsfile'
     - '.gitlab-ci.yml'
     - 'README.md'
-    branches: [ master ]
+    branches:
+    - '**'        # matches every branch
   pull_request:
     branches: [ master ]
 
@@ -62,6 +63,58 @@ jobs:
         with:
             java-version: 1.8
 
+      # Get the branch name
+      - name: Extract branch name
+        shell: bash
+        run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+        id: extract_branch
+
+      # And run script to check if it exists in FOD
+      - name: Verify FOD Release
+        shell: pwsh
+        run: |
+          Write-Host "Installing PowerShellForFOD module ..."
+          Install-Module PowerShellForFOD -Scope CurrentUser -Force -Repository PSGallery
+          Write-Host "Configuring FOD API ..."
+          $PWord = ConvertTo-SecureString -String "$FOD_PAT" -AsPlainText -Force
+          $Credential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList "$FOD_TENANT\$FOD_USER", $PWord
+          Set-FODConfig -ApiUri $FOD_API -GrantType UsernamePassword -Scope api-tenant
+          Get-FODToken -Credential $Credential
+          Write-Host "Checking for existence of $GITHUB_BRANCH_NAME release in application $FOD_APPLICATION_NAME"
+          if (-not (Test-FODRelease -ApplicationName $FOD_APPLICATION_NAME -ReleaseName $GITHUB_BRANCH_NAME)) { throw "Release $GITHUB_BRANCH_NAME does not exist - please create it!" }
+          $ReleaseId = Get-FODReleaseId -ApplicationName $FOD_APPLICATION_NAME -ReleaseName $GITHUB_BRANCH_NAME
+          Write-Output "::set-output name=FOD_RELEASE_ID::$ReleaseId"
+        id: verify_fod_release
+    #    $ScanSummary = .\fortify-fod.ps1 -ZipFile '.\fod.zip' -ApplicationName 'IWA (Java)' -ReleaseName 'master' -Notes 'GitHub Action initiated scan' -FodApiUri 'https://api.emea.fortify.com' -FodApiUsername '${{ secrets.FOD_ACCESS_KEY }}' -FodApiPassword '${{ secrets.FOD_SECRET_KEY }}' -Raw
+    #    $ScanId = $ScanSummary.scanId
+    #    $ReleaseName = $ScanSummary.releaseName
+    #    $ScanStatus = $ScanSummary.analysisStatusType
+    #    $StarRating = $ScanSummary.starRating
+    #    $IssueCountCritical = $ScanSummary.issueCountCritical
+    #    $IssueCountHigh = $ScanSummary.issueCountHigh
+    #    $IssueCountMedium = $ScanSummary.issueCountMedium
+    #    $IssueCountLow = $ScanSummary.issueCountLow
+    #    $TotalIssues = $ScanSummary.issueCountTotal
+    #    Write-Host "Finished scan $ScanId with status '$ScanStatus'"
+    #    Write-Host "Release '$ReleaseName' has a $StarRating star rating"
+    #    Write-Host "Critical Issues:  $IssueCountCritical"
+    #    Write-Host "High Issues:      $IssueCountHigh"
+    #    Write-Host "Medium Issues:    $IssueCountMedium"
+    #    Write-Host "Low Issues:       $IssueCountLow"
+    #    Write-Host "Total Issues:     $IssueCountTotal"
+    #    if ($StarRating -lt 1) { exit 1 } # set to your own criteria
+    #  env:
+    #    repo-token: "${{ secrets.GITHUB_TOKEN }}"
+        env:
+          FOD_TENANT: ${{ secrets.FOD_TENANT }}
+          FOD_USER: ${{ secrets.FOD_USER }}
+          FOD_PAT: ${{ secrets.FOD_PAT }}
+          FOD_APPLICATION_NAME: "IWAExpress"
+          #FOD_RELEASE_ID: ${{ secrets.FOD_RELEASE_ID }}
+          FOD_URL: "https://emea.fortify.com/"
+          FOD_API_URL: "https://api.emea.fortify.com/"
+          GITHUB_BRANCH_NAME: ${{ steps.extract_branch.outputs.branch }}
+
       # Prepare source+dependencies for upload. The default example is for a Maven project that uses pom.xml.
       # TODO: Update PACKAGE_OPTS based on the ScanCentral Client documentation for your project's included tech stack(s). Helpful hints:
       #   ScanCentral Client will download dependencies for maven (-bt mvn) and gradle (-bt gradle).
@@ -88,7 +141,8 @@ jobs:
             FOD_TENANT: ${{ secrets.FOD_TENANT }}
             FOD_USER: ${{ secrets.FOD_USER }}
             FOD_PAT: ${{ secrets.FOD_PAT }}
-            FOD_RELEASE_ID: ${{ secrets.FOD_RELEASE_ID }}
+            #FOD_RELEASE_ID: ${{ secrets.FOD_RELEASE_ID }}
+            FOD_RELEASE_ID: ${{ steps.verify_fod_release.outputs.FOD_RELEASE_ID }}
             FOD_URL: "https://emea.fortify.com/"
             FOD_API_URL: "https://api.emea.fortify.com/"
             FOD_UPLOADER_OPTS: "-ep 2 -pp 0 -I 1 -apf"
@@ -103,7 +157,8 @@ jobs:
             tenant: ${{ secrets.FOD_TENANT }}
             user: ${{ secrets.FOD_USER }}
             password: ${{ secrets.FOD_PAT }}
-            release-id: ${{ secrets.FOD_RELEASE_ID }}
+            #release-id: ${{ secrets.FOD_RELEASE_ID }}
+            release-id: ${{ steps.verify_fod_release.outputs.FOD_RELEASE_ID }}
             output: ./sarif/output.sarif
 
       # Check if SARIF output file has been created
