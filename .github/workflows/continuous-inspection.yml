@@ -75,14 +75,14 @@ jobs:
         run: |
           Write-Host "Installing PowerShellForFOD module ..."
           Install-Module PowerShellForFOD -Scope CurrentUser -Force -Repository PSGallery
-          Write-Host "Configuring FOD API ..."
-          $PWord = ConvertTo-SecureString -String "$FOD_PAT" -AsPlainText -Force
-          $Credential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList "$FOD_TENANT\$FOD_USER", $PWord
-          Set-FODConfig -ApiUri $FOD_API -GrantType UsernamePassword -Scope api-tenant
+          Write-Host "Configuring FOD API $Env:FOD_API or $env.FOD_API ..."
+          $PWord = ConvertTo-SecureString -String "$Env:FOD_PAT" -AsPlainText -Force
+          $Credential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList "$Env:FOD_TENANT\$Env:FOD_USER", $PWord
+          Set-FODConfig -ApiUri $Env:FOD_API -GrantType UsernamePassword -Scope api-tenant
           Get-FODToken -Credential $Credential
-          Write-Host "Checking for existence of $GITHUB_BRANCH_NAME release in application $FOD_APPLICATION_NAME"
-          if (-not (Test-FODRelease -ApplicationName $FOD_APPLICATION_NAME -ReleaseName $GITHUB_BRANCH_NAME)) { throw "Release $GITHUB_BRANCH_NAME does not exist - please create it!" }
-          $ReleaseId = Get-FODReleaseId -ApplicationName $FOD_APPLICATION_NAME -ReleaseName $GITHUB_BRANCH_NAME
+          Write-Host "Checking for existence of $Env:GITHUB_BRANCH_NAME release in application $Env:FOD_APPLICATION_NAME"
+          if (-not (Test-FODRelease -ApplicationName $Env:FOD_APPLICATION_NAME -ReleaseName $Env:GITHUB_BRANCH_NAME)) { throw "Release $Env:GITHUB_BRANCH_NAME does not exist - please create it!" }
+          $ReleaseId = Get-FODReleaseId -ApplicationName $Env:FOD_APPLICATION_NAME -ReleaseName $Env:GITHUB_BRANCH_NAME
           Write-Output "::set-output name=FOD_RELEASE_ID::$ReleaseId"
         id: verify_fod_release
     #    $ScanSummary = .\fortify-fod.ps1 -ZipFile '.\fod.zip' -ApplicationName 'IWA (Java)' -ReleaseName 'master' -Notes 'GitHub Action initiated scan' -FodApiUri 'https://api.emea.fortify.com' -FodApiUsername '${{ secrets.FOD_ACCESS_KEY }}' -FodApiPassword '${{ secrets.FOD_SECRET_KEY }}' -Raw
