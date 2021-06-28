@@ -84,6 +84,7 @@ jobs:
           # Check if FOD release matching branch name exists and fail if not - we could also create/copy new release.
           if (-not (Test-FODRelease -ApplicationName $Env:FOD_APPLICATION_NAME -ReleaseName $Env:GITHUB_BRANCH_NAME)) { throw "Release $Env:GITHUB_BRANCH_NAME does not exist - please create it!" }
           $ReleaseId = Get-FODReleaseId -ApplicationName $Env:FOD_APPLICATION_NAME -ReleaseName $Env:GITHUB_BRANCH_NAME
+          cat /home/runner/.ps4fod
           Write-Output "::set-output name=FOD_RELEASE_ID::$ReleaseId"
         id: verify_fod_release
         env:
@@ -91,7 +92,6 @@ jobs:
           FOD_USER: ${{ secrets.FOD_USER }}
           FOD_PAT: ${{ secrets.FOD_PAT }}
           FOD_APPLICATION_NAME: "IWAExpress"
-          #FOD_RELEASE_ID: ${{ secrets.FOD_RELEASE_ID }}
           FOD_URL: "https://emea.fortify.com/"
           FOD_API_URI: "https://api.emea.fortify.com/"
           GITHUB_BRANCH_NAME: ${{ steps.extract_branch.outputs.branch }}
@@ -122,7 +122,6 @@ jobs:
             FOD_TENANT: ${{ secrets.FOD_TENANT }}
             FOD_USER: ${{ secrets.FOD_USER }}
             FOD_PAT: ${{ secrets.FOD_PAT }}
-            #FOD_RELEASE_ID: ${{ secrets.FOD_RELEASE_ID }}
             FOD_RELEASE_ID: ${{ steps.verify_fod_release.outputs.FOD_RELEASE_ID }}
             FOD_URL: "https://emea.fortify.com/"
             FOD_API_URL: "https://api.emea.fortify.com/"
@@ -160,6 +159,7 @@ jobs:
         shell: pwsh
         run: |
           Write-Output "Checking status of FOD Release $Env:FOD_RELEASE_ID"
+          cat /home/runner/.ps4fod
           $ScanSummary = Get-FODReleaseScans -ReleaseId $Env:FOD_RELEASE_ID -OrderBy completedDateTime -Limit 1
           $ScanId = $ScanSummary.scanId
           $ReleaseName = $ScanSummary.releaseName
