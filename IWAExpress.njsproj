@@ -33,8 +33,7 @@
     <Content Include=".dockerignore" />
     <Content Include=".env" />
     <Content Include=".github\workflows\continuous-inspection.yml" />
-    <Content Include=".github\workflows\fortify-results-importer.yml" />
-    <Content Include=".github\workflows\fortify-analysis.yml" />
+    <Content Include=".github\workflows\FOD-results-importer.yml" />
     <Content Include=".github\workflows\release.yml" />
     <Content Include=".github\workflows\test.yml" />
     <Content Include="app.js" />

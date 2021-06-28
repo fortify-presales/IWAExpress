@@ -41,17 +41,49 @@ jobs:
         with:
           java-version: 1.8
 
-      # Once scan completes, pull SAST issues from Fortify on Demand and generate SARIF output.
-      # TODO: Review Action inputs. For most users, these will be the same as used in the Perform SAST Scan step.
+      # Get the branch name
+      - name: Extract branch name
+        shell: bash
+        run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+        id: extract_branch
+
+      # And run script to check if it exists in FOD
+      - name: Verify FOD Release
+        shell: pwsh
+        run: |
+          Write-Output "Installing PowerShellForFOD module ..."
+          Install-Module PowerShellForFOD -Scope CurrentUser -Force -Repository PSGallery
+          Write-Output "Configuring FOD API $Env:FOD_API_URI or $env.FOD_API_URI ..."
+          $PWord = ConvertTo-SecureString -String "$Env:FOD_PAT" -AsPlainText -Force
+          $Credential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList "$Env:FOD_TENANT\$Env:FOD_USER", $PWord
+          Set-FODConfig -ApiUri $Env:FOD_API_URI -GrantType UsernamePassword -Scope api-tenant
+          Get-FODToken -Credential $Credential
+          Write-Output "Checking for existence of $Env:GITHUB_BRANCH_NAME release in application $Env:FOD_APPLICATION_NAME"
+          # Check if FOD release matching branch name exists and fail if not - we could also create/copy new release.
+          if (-not (Test-FODRelease -ApplicationName $Env:FOD_APPLICATION_NAME -ReleaseName $Env:GITHUB_BRANCH_NAME)) { throw "Release $Env:GITHUB_BRANCH_NAME does not exist - please create it!" }
+          $ReleaseId = Get-FODReleaseId -ApplicationName $Env:FOD_APPLICATION_NAME -ReleaseName $Env:GITHUB_BRANCH_NAME
+          Write-Output "::set-output name=FOD_RELEASE_ID::$ReleaseId"
+        id: verify_fod_release
+        env:
+          FOD_TENANT: ${{ secrets.FOD_TENANT }}
+          FOD_USER: ${{ secrets.FOD_USER }}
+          FOD_PAT: ${{ secrets.FOD_PAT }}
+          FOD_APPLICATION_NAME: "IWAExpress"
+          #FOD_RELEASE_ID: ${{ secrets.FOD_RELEASE_ID }}
+          FOD_URL: "https://emea.fortify.com/"
+          FOD_API_URI: "https://api.emea.fortify.com/"
+          GITHUB_BRANCH_NAME: ${{ steps.extract_branch.outputs.branch }}
+
+      # Pull SAST issues from Fortify on Demand and generate SARIF output.
       - name: Download Results
         uses: fortify/gha-fod-generate-sarif@1.1.0
         with:
-          base-url: https://emea.fortify.com
-          tenant: ${{ secrets.FOD_TENANT }}
-          user: ${{ secrets.FOD_USER }}
-          password: ${{ secrets.FOD_PAT }}
-          release-id: ${{ secrets.FOD_RELEASE_ID }}
-          output: ./sarif/output.sarif
+            base-url: https://emea.fortify.com
+            tenant: ${{ secrets.FOD_TENANT }}
+            user: ${{ secrets.FOD_USER }}
+            password: ${{ secrets.FOD_PAT }}
+            release-id: ${{ steps.verify_fod_release.outputs.FOD_RELEASE_ID }}
+            output: ./sarif/output.sarif
 
       # Check if SARIF output file has been created
       - name: Check file existence

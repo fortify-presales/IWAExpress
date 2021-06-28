@@ -73,38 +73,19 @@ jobs:
       - name: Verify FOD Release
         shell: pwsh
         run: |
-          Write-Host "Installing PowerShellForFOD module ..."
+          Write-Output "Installing PowerShellForFOD module ..."
           Install-Module PowerShellForFOD -Scope CurrentUser -Force -Repository PSGallery
-          Write-Host "Configuring FOD API $Env:FOD_API_URI or $env.FOD_API_URI ..."
+          Write-Output "Configuring FOD API $Env:FOD_API_URI or $env.FOD_API_URI ..."
           $PWord = ConvertTo-SecureString -String "$Env:FOD_PAT" -AsPlainText -Force
           $Credential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList "$Env:FOD_TENANT\$Env:FOD_USER", $PWord
           Set-FODConfig -ApiUri $Env:FOD_API_URI -GrantType UsernamePassword -Scope api-tenant
           Get-FODToken -Credential $Credential
-          Write-Host "Checking for existence of $Env:GITHUB_BRANCH_NAME release in application $Env:FOD_APPLICATION_NAME"
+          Write-Output "Checking for existence of $Env:GITHUB_BRANCH_NAME release in application $Env:FOD_APPLICATION_NAME"
+          # Check if FOD release matching branch name exists and fail if not - we could also create/copy new release.
           if (-not (Test-FODRelease -ApplicationName $Env:FOD_APPLICATION_NAME -ReleaseName $Env:GITHUB_BRANCH_NAME)) { throw "Release $Env:GITHUB_BRANCH_NAME does not exist - please create it!" }
           $ReleaseId = Get-FODReleaseId -ApplicationName $Env:FOD_APPLICATION_NAME -ReleaseName $Env:GITHUB_BRANCH_NAME
           Write-Output "::set-output name=FOD_RELEASE_ID::$ReleaseId"
         id: verify_fod_release
-    #    $ScanSummary = .\fortify-fod.ps1 -ZipFile '.\fod.zip' -ApplicationName 'IWA (Java)' -ReleaseName 'master' -Notes 'GitHub Action initiated scan' -FodApiUri 'https://api.emea.fortify.com' -FodApiUsername '${{ secrets.FOD_ACCESS_KEY }}' -FodApiPassword '${{ secrets.FOD_SECRET_KEY }}' -Raw
-    #    $ScanId = $ScanSummary.scanId
-    #    $ReleaseName = $ScanSummary.releaseName
-    #    $ScanStatus = $ScanSummary.analysisStatusType
-    #    $StarRating = $ScanSummary.starRating
-    #    $IssueCountCritical = $ScanSummary.issueCountCritical
-    #    $IssueCountHigh = $ScanSummary.issueCountHigh
-    #    $IssueCountMedium = $ScanSummary.issueCountMedium
-    #    $IssueCountLow = $ScanSummary.issueCountLow
-    #    $TotalIssues = $ScanSummary.issueCountTotal
-    #    Write-Host "Finished scan $ScanId with status '$ScanStatus'"
-    #    Write-Host "Release '$ReleaseName' has a $StarRating star rating"
-    #    Write-Host "Critical Issues:  $IssueCountCritical"
-    #    Write-Host "High Issues:      $IssueCountHigh"
-    #    Write-Host "Medium Issues:    $IssueCountMedium"
-    #    Write-Host "Low Issues:       $IssueCountLow"
-    #    Write-Host "Total Issues:     $IssueCountTotal"
-    #    if ($StarRating -lt 1) { exit 1 } # set to your own criteria
-    #  env:
-    #    repo-token: "${{ secrets.GITHUB_TOKEN }}"
         env:
           FOD_TENANT: ${{ secrets.FOD_TENANT }}
           FOD_USER: ${{ secrets.FOD_USER }}
@@ -157,7 +138,6 @@ jobs:
             tenant: ${{ secrets.FOD_TENANT }}
             user: ${{ secrets.FOD_USER }}
             password: ${{ secrets.FOD_PAT }}
-            #release-id: ${{ secrets.FOD_RELEASE_ID }}
             release-id: ${{ steps.verify_fod_release.outputs.FOD_RELEASE_ID }}
             output: ./sarif/output.sarif
 
@@ -174,6 +154,38 @@ jobs:
         uses: github/codeql-action/upload-sarif@v1
         with:
             sarif_file: ./sarif/output.sarif
+
+      # Run script to check the results of the scan to determine success/failure
+      - name: Check FOD Scan Status
+        shell: pwsh
+        run: |
+          Write-Output "Checking status of FOD Release $Env:FOD_RELEASE_ID"
+          $ScanSummary = Get-FODReleaseScans -ReleaseId $Env:FOD_RELEASE_ID -OrderBy completedDateTime -Limit 1
+          $ScanId = $ScanSummary.scanId
+          $ReleaseName = $ScanSummary.releaseName
+          $ScanStatus = $ScanSummary.analysisStatusType
+          $StarRating = $ScanSummary.starRating
+          $IssueCountCritical = $ScanSummary.issueCountCritical
+          $IssueCountHigh = $ScanSummary.issueCountHigh
+          $IssueCountMedium = $ScanSummary.issueCountMedium
+          $IssueCountLow = $ScanSummary.issueCountLow
+          $TotalIssues = $ScanSummary.issueCountTotal
+          Write-Output "Finished scan $ScanId with status '$ScanStatus'"
+          Write-Output "Release '$ReleaseName' has a $StarRating star rating"
+          Write-Output "Critical Issues:  $IssueCountCritical"
+          Write-Output "High Issues:      $IssueCountHigh"
+          Write-Output "Medium Issues:    $IssueCountMedium"
+          Write-Output "Low Issues:       $IssueCountLow"
+          Write-Output "Total Issues:     $IssueCountTotal"
+          if ($StarRating -lt 2) { exit 1 } # Fail if less than 2 star rating - set to your own criteria
+        env:
+          FOD_TENANT: ${{ secrets.FOD_TENANT }}
+          FOD_USER: ${{ secrets.FOD_USER }}
+          FOD_PAT: ${{ secrets.FOD_PAT }}
+          FOD_APPLICATION_NAME: "IWAExpress"
+          FOD_RELEASE_ID: ${{ steps.verify_fod_release.outputs.FOD_RELEASE_ID }}
+          FOD_URL: "https://emea.fortify.com/"
+          FOD_API_URI: "https://api.emea.fortify.com/"
 
   FoD-DAST-Scan:
     # The type of runner that the job will run on
