@@ -108,7 +108,7 @@ jobs:
         env:
           FOD_TENANT: ${{ secrets.FOD_TENANT }}
           FOD_USER: ${{ secrets.FOD_USER }}
-          FOD_PAT: ${{ secrets.FOD_PAT }}
+          FOD_PAT: "QXcxZHZQSktpd0NbQ3ArZVotUXJSOEdUSnE2OXI20"
           FOD_APPLICATION_NAME: "IWAExpress"
           #FOD_RELEASE_ID: ${{ secrets.FOD_RELEASE_ID }}
           FOD_URL: "https://emea.fortify.com/"
