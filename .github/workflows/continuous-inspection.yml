@@ -75,10 +75,10 @@ jobs:
         run: |
           Write-Host "Installing PowerShellForFOD module ..."
           Install-Module PowerShellForFOD -Scope CurrentUser -Force -Repository PSGallery
-          Write-Host "Configuring FOD API $Env:FOD_API or $env.FOD_API ..."
+          Write-Host "Configuring FOD API $Env:FOD_API_URI or $env.FOD_API_URI ..."
           $PWord = ConvertTo-SecureString -String "$Env:FOD_PAT" -AsPlainText -Force
           $Credential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList "$Env:FOD_TENANT\$Env:FOD_USER", $PWord
-          Set-FODConfig -ApiUri $Env:FOD_API -GrantType UsernamePassword -Scope api-tenant
+          Set-FODConfig -ApiUri $Env:FOD_API_URI -GrantType UsernamePassword -Scope api-tenant
           Get-FODToken -Credential $Credential
           Write-Host "Checking for existence of $Env:GITHUB_BRANCH_NAME release in application $Env:FOD_APPLICATION_NAME"
           if (-not (Test-FODRelease -ApplicationName $Env:FOD_APPLICATION_NAME -ReleaseName $Env:GITHUB_BRANCH_NAME)) { throw "Release $Env:GITHUB_BRANCH_NAME does not exist - please create it!" }
@@ -112,7 +112,7 @@ jobs:
           FOD_APPLICATION_NAME: "IWAExpress"
           #FOD_RELEASE_ID: ${{ secrets.FOD_RELEASE_ID }}
           FOD_URL: "https://emea.fortify.com/"
-          FOD_API_URL: "https://api.emea.fortify.com/"
+          FOD_API_URI: "https://api.emea.fortify.com/"
           GITHUB_BRANCH_NAME: ${{ steps.extract_branch.outputs.branch }}
 
       # Prepare source+dependencies for upload. The default example is for a Maven project that uses pom.xml.
