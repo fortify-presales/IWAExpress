@@ -84,7 +84,6 @@ jobs:
           # Check if FOD release matching branch name exists and fail if not - we could also create/copy new release.
           if (-not (Test-FODRelease -ApplicationName $Env:FOD_APPLICATION_NAME -ReleaseName $Env:GITHUB_BRANCH_NAME)) { throw "Release $Env:GITHUB_BRANCH_NAME does not exist - please create it!" }
           $ReleaseId = Get-FODReleaseId -ApplicationName $Env:FOD_APPLICATION_NAME -ReleaseName $Env:GITHUB_BRANCH_NAME
-          cat /home/runner/.ps4fod
           Write-Output "::set-output name=FOD_RELEASE_ID::$ReleaseId"
         id: verify_fod_release
         env:
@@ -160,7 +159,7 @@ jobs:
         run: |
           Write-Output "Checking status of FOD Release $Env:FOD_RELEASE_ID"
           cat /home/runner/.ps4fod
-          $ScanSummary = Get-FODReleaseScans -ReleaseId $Env:FOD_RELEASE_ID -OrderBy completedDateTime -Limit 1
+          $ScanSummary = Get-FODReleaseScans -ApiUri $Env:FOD_API_URI -ReleaseId $Env:FOD_RELEASE_ID -OrderBy completedDateTime -Limit 1
           $ScanId = $ScanSummary.scanId
           $ReleaseName = $ScanSummary.releaseName
           $ScanStatus = $ScanSummary.analysisStatusType
