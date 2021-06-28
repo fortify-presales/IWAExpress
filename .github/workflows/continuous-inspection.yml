@@ -16,6 +16,7 @@ on:
     - 'Jenkinsfile'
     - '.gitlab-ci.yml'
     - 'README.md'
+    - 'LICENSE'
     branches:
     - '**'        # matches every branch
   pull_request:
@@ -178,7 +179,8 @@ jobs:
           Write-Output "Medium Issues:    $IssueCountMedium"
           Write-Output "Low Issues:       $IssueCountLow"
           Write-Output "Total Issues:     $IssueCountTotal"
-          if ($StarRating -lt 2) { exit 1 } # Fail if less than 2 star rating - set to your own criteria
+          # Example of using issue data
+          #if ($StarRating -lt 2) { exit 1 } # Fail if less than 2 star rating - set to your own criteria
         env:
           FOD_TENANT: ${{ secrets.FOD_TENANT }}
           FOD_USER: ${{ secrets.FOD_USER }}
