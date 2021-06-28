@@ -127,31 +127,29 @@ jobs:
             FOD_UPLOADER_OPTS: "-ep 2 -pp 0 -I 1 -apf"
             FOD_UPLOADER_NOTES: 'Triggered by GitHub Actions (${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})'
 
-      # Once scan completes, pull SAST issues from Fortify on Demand and generate SARIF output.
-      # TODO: Review Action inputs. For most users, these will be the same as used in the Perform SAST Scan step.
-      - name: Download Results
-        uses: fortify/gha-fod-generate-sarif@1.1.0
+      # Pull SAST issues from Fortify on Demand and generate GitHub-optimized SARIF output
+      - name: Export Results
+        uses: fortify/gha-export-vulnerabilities@v1
         with:
-            base-url: https://emea.fortify.com
-            tenant: ${{ secrets.FOD_TENANT }}
-            user: ${{ secrets.FOD_USER }}
-            password: ${{ secrets.FOD_PAT }}
-            release-id: ${{ steps.verify_fod_release.outputs.FOD_RELEASE_ID }}
-            output: ./sarif/output.sarif
+          fod_base_url: https://emea.fortify.com
+          fod_tenant: ${{ secrets.FOD_TENANT }}
+          fod_user: ${{ secrets.FOD_USER }}
+          fod_password: ${{ secrets.FOD_PAT }}
+          fod_release_id: ${{ steps.verify_fod_release.outputs.FOD_RELEASE_ID }}
 
       # Check if SARIF output file has been created
       - name: Check file existence
         id: check_files
         uses: andstor/file-existence-action@v1
         with:
-          files: "./sarif/output.sarif"
+          files: "./gh-fortify-sast.sarif"
 
-      # Import Fortify on Demand results to GitHub Security Code Scanning
+      # Import Fortify SAST results to GitHub Security Code Scanning
       - name: Import Results
         if: steps.check_files.outputs.files_exists == 'true'
         uses: github/codeql-action/upload-sarif@v1
         with:
-            sarif_file: ./sarif/output.sarif
+          sarif_file: ./gh-fortify-sast.sarif
 
       # Run script to check the results of the scan to determine success/failure
       - name: Check FOD Scan Status
@@ -163,7 +161,7 @@ jobs:
           Set-FODConfig -ApiUri $Env:FOD_API_URI -GrantType UsernamePassword -Scope api-tenant
           Get-FODToken -Credential $Credential
           Write-Output "Checking status of FOD Release $Env:FOD_RELEASE_ID"
-          $ScanSummary = Get-FODReleaseScans -ReleaseId $Env:FOD_RELEASE_ID -OrderBy completedDateTime -Limit 1 -ForceVerbose
+          $ScanSummary = Get-FODReleaseScans -ReleaseId $Env:FOD_RELEASE_ID -OrderBy completedDateTime -Limit 1
           $ScanId = $ScanSummary.scanId
           $ReleaseName = $ScanSummary.releaseName
           $ScanStatus = $ScanSummary.analysisStatusType
