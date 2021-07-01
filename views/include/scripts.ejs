@@ -7,13 +7,16 @@
 <script src="/assets/js/lib/owl.carousel.min.js"></script>
 
 <script src="/assets/js/components/SubscribeNewsletter.js"></script>
+<script src="/assets/js/components/CartCount.js"></script>
+<script src="/assets/js/components/CartAdd.js"></script>
 
 <script src="/assets/js/site.js"></script>
 
 <script type="text/javascript">
     (function ($) {
         $(document).ready(function () {
-            $('.subscribe-newsletter').SubscribeNewsletter();
+            $('#subscribe-newsletter').SubscribeNewsletter();
+            $('#shopping-cart-count').CartCount();
         });
     })(jQuery);
 </script>

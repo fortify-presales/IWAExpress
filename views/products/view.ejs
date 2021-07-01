@@ -32,7 +32,7 @@
                 <div class="col-md-6 item-entry">
                     <h5><%= product.code %></h5>
                     <span class="product-rating mb-4">
-                        <input id="input-1" type="number" name="input-1" value="<%= product.rating %>">
+                        <input class="star-rating" id="input-1" type="number" name="input-1" value="<%= product.rating %>">
                         <span class="product-reviews"><a href="#">Customer Reviews</a></span>
                     </span>
                     <h6>Summary</h6>
@@ -41,19 +41,63 @@
                     <p><%= product.description %></p>
                     <h4 class="price pt-2 pb-4 item-price">
                         <% if (product.onSale) { %>
-                            <del>£<%= product.price %></del>
-                             &dash; 
-                            £<%= product.salePrice %>
-                        <% } else { %>    
-                            £<%= product.price %>
+                        <del>&#164;<%= product.price %></del>
+                        &dash;
+                        &#164;<%= product.salePrice %>
+                        <% } else { %>
+                        &#164;<%= product.price %>
                         <% } %>
                         <% if (product.inStock) { %>
-                            <span class="badge badge-success">In Stock</span>
-                        <% } else { %>   
-                            <span class="badge badge-danger">Out of Stock</span>
-                            <span class="badge badge-light text-dark">In stock in <%= product.timeToStock %> days</span>
-                        <% } %>    
+                        <span class="badge badge-success">In Stock</span>
+                        <% } else { %>
+                        <span class="badge badge-danger">Out of Stock</span>
+                        <span class="badge badge-light text-dark">In stock in <%= product.timeToStock %> days</span>
+                        <% } %>
                     </h4>
+
+                    <div class="cart-add">
+                        <div class="mb-5">
+                            <div class="input-group mb-3" style="max-width: 220px;">
+                                <div class="input-group-prepend">
+                                    <button id="quantity-minus" class="btn btn-outline-primary js-btn-minus" type="button">&minus;</button>
+                                </div>
+                                <input type="number" step="1" min="0" class="form-control text-center" value="1" id="quantity-value">
+                                <div class="input-group-append">
+                                    <button id="quantity-plus" class="btn btn-outline-primary js-btn-plus" type="button">&plus;</button>
+                                </div>
+                            </div>
+                        </div>
+                        <p>
+                            <% if (product.inStock) { %>
+                                <a id="add-to-cart" href="#" class="buy-now btn btn-sm height-auto px-4 py-3 btn-primary">Add To Cart</a>
+                            <% } else { %>
+                                <a id="add-to-cart" href="#" class="disabled buy-now btn btn-sm height-auto px-4 py-3 btn-primary">Add To Cart</a>
+                            <% } %>
+
+                        </p>
+                    </div>
+
+                    <div class="confirmation-modal">
+                            <div id="checkout-now-modal" role="dialog" aria-hidden="true" class="modal fade" style="display: none;">
+                                <div class="modal-dialog modal-md">
+                                    <div tabindex="-1" role="document" aria-labelledby="checkout-now-header" aria-describedby="checkout-now-modal-body" class="modal-content">
+                                        <header id="checkout-now-modal-header" class="modal-header">
+                                            <h5 class="modal-title">Checkout Now</h5>
+                                            <button type="button" aria-label="Close" class="close" data-dismiss="modal">×</button>
+                                        </header>
+                                        <div id="checkout-now-modal-body" class="modal-body">
+                                            <div class="m-4 text-center">
+                                                <h4></h4>
+                                            </div>
+                                        </div>
+                                        <footer id="checkout-now-modal-footer" class="modal-footer">
+                                            <button id="checkout-now"  type="button" class="btn btn-primary" data-dismiss="modal">Buy now</button>
+                                            <button id="continue-shopping" type="button" class="btn btn-secondary" data-dismiss="modal">Continue shopping</button>
+                                        </footer>
+                                    </div>
+                                </div>
+                            </div>
+                    </div>
 
                 </div>
 
@@ -68,11 +112,14 @@
 <% include ../include/scripts %>
 
 <script type="text/javascript">
-    $(document).ready(function() {
-        $('input[type="number"]').each(function() {
-            $(this).rating({displayOnly: true, showCaption: false, step: 1.0, size: 'xs', theme: 'krajee-fas'});
+    (function ($) {
+        $(document).ready(function () {
+            $('.cart-add').CartAdd({ pid: "<%- product.uuid -%>" });
+            $('input[class="star-rating"]').each(function () {
+                $(this).rating({ displayOnly: true, showCaption: false, step: 1.0, size: 'xs', theme: 'krajee-fas' });
+            });
         });
-    });        
+    })(jQuery);       
 </script>
 
 </body>

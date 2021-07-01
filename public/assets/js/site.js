@@ -1,9 +1,7 @@
 $(document).ready(function () {
     var keywords = GetURLParameter("keywords");
-    console.log("keywords = " + keywords);
     if (keywords) {
         $("#keywords").val(keywords);
-        //$("#search").submit();
     }
     $("#search").submit(function(event) {
         event.preventDefault();
@@ -13,14 +11,13 @@ $(document).ready(function () {
             $('#data tr').remove();
             if (response.length > 0) {
                 $.each(response, function (i, row) {
-                    console.log(row);
                     $('#data').append(
                         "<div class='row p-4'>" +
                             "<div class='col-2'><img class='img-thumbnail' width='100px' src='/assets/img/" + row.image + "'></img></div>" +
                             "<div class='col-2'><a href='/products/" + row.id + "'>" + row.name + "</a></div>" +
                             "<div class='col-4'>" + row.summary.substring(0, 40) + "&hellip;</div>" +
                             "<div class='col-1'>£" + row.price + "</div>" +
-                            "<div class='col-2'><input id='input-'" + i + " type='number' name='input-'" + i + " value='" + row.rating + "'></div>" +
+                            "<div class='col-2'><input id='input-" + i + "' class='star-rating' name='input-" + i + "' value='" + row.rating + "'></div>" +
                             "<div class='col-1'>" +
                                 (row.inStock ? "<span class='badge badge-success'>In Stock</span>" : "<span class='badge badge-danger'>Out of Stock</span>") +
                             "</div>" +
@@ -28,7 +25,7 @@ $(document).ready(function () {
                 });
                 (function(){
                     setTimeout(function() {
-                        $('input[type="number"]').each(function() {
+                        $('input[class="star-rating"]').each(function() {
                             $(this).rating({displayOnly: true, showCaption: false, step: 1.0, size: 'xs', theme: 'krajee-fas'});
                         })
                     }, 100);

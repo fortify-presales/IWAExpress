@@ -16,7 +16,7 @@
                     <h1 class="h2">Products</h1>
                 </div>
 
-                <div class="new-products">
+                <div id="new-products">
                     <div class="row">
                         <div class="container">
                             <div id="product-data" class="row">
@@ -68,10 +68,10 @@
     <script src="/assets/js/components/NewProducts.js"></script>
     <script type="text/javascript">
         $(document).ready(function () {
-            $('.new-products').NewProducts();
+            $('#new-products').NewProducts();
             (function () {
                 setTimeout(function () {
-                    $('input[type="number"]').each(function () {
+                    $('input[class="star-rating"]').each(function () {
                         $(this).rating({ displayOnly: true, showCaption: false, step: 1.0, size: 'xs', theme: 'krajee-fas' });
                     })
                 }, 100);
