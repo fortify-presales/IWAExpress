@@ -5,8 +5,10 @@ $(document).ready(function () {
     }
     $("#search").submit(function(event) {
         event.preventDefault();
-        const keywords = $("#keywords").val();
-        $('#search-query').html("Search results for: '" + keywords + "'").toggleClass("d-none");
+        const keywords = document.getElementById('keywords').value;
+        const p = document.getElementById("search-query");
+        p.innerHTML = keywords;
+        $('#search-query').parent().toggleClass("d-none");
         $.get("/api/products", {keywords: keywords, limit: 10}, function(response) {
             $('#data tr').remove();
             if (response.length > 0) {
@@ -16,7 +18,7 @@ $(document).ready(function () {
                             "<div class='col-2'><img class='img-thumbnail' width='100px' src='/assets/img/" + row.image + "'></img></div>" +
                             "<div class='col-2'><a href='/products/" + row.id + "'>" + row.name + "</a></div>" +
                             "<div class='col-4'>" + row.summary.substring(0, 40) + "&hellip;</div>" +
-                            "<div class='col-1'>£" + row.price + "</div>" +
+                            "<div class='col-1'>&#164;" + row.price + "</div>" +
                             "<div class='col-2'><input id='input-" + i + "' class='star-rating' name='input-" + i + "' value='" + row.rating + "'></div>" +
                             "<div class='col-1'>" +
                                 (row.inStock ? "<span class='badge badge-success'>In Stock</span>" : "<span class='badge badge-danger'>Out of Stock</span>") +

@@ -115,6 +115,7 @@
     <Content Include="public\assets\img\pexels-photo-large-2.jpg" />
     <Content Include="public\assets\img\pexels-photo-large-3.jpg" />
     <Content Include="public\assets\img\sale.png" />
+    <Content Include="public\assets\js\components\Cart.js" />
     <Content Include="public\assets\js\components\CartCount.js" />
     <Content Include="public\assets\js\components\NewProducts.js" />
     <Content Include="public\assets\js\components\CartAdd.js" />

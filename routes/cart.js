@@ -12,4 +12,19 @@ router.get('/', function(request, response) {
     });
 });
 
+// shopping cart checkout
+router.get('/checkout', function (request, response) {
+    response.render('cart/checkout', {
+        title: appConf.name + " :: Checkout"
+    });
+});
+
+// shopping cart checkout
+router.get('//confirm', function (request, response) {
+    response.render('cart/confirm', {
+        title: appConf.name + " :: Confirmation"
+    });
+});
+
+
 module.exports = router;
