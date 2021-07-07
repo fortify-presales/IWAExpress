@@ -9,5 +9,6 @@ git pull
 #chown -R $USER:$USER .
 
 docker-compose --profile production down
-cp -d data/nginx/app.conf.production data/nginx/app.conf
-docker-compose --profile production --build up -d
+cp -d data/nginx/app.conf.prod data/nginx/app.conf
+docker-compose --profile production build
+docker-compose --profile production up -d
