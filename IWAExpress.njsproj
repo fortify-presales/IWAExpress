@@ -39,6 +39,7 @@
     <Content Include="app.js" />
     <Content Include="bin\cleanup.ps1" />
     <Content Include="bin\fortify-sca.ps1" />
+    <Content Include="bin\fortify-scancentral-dast.ps1" />
     <Content Include="bin\modules\FortifyFunctions.psm1" />
     <Content Include="bin\init-letsencrypt.sh" />
     <Content Include="bin\Microsoft.NodejsTools.WebRole.dll" />
