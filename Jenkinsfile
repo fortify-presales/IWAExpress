@@ -35,7 +35,7 @@ pipeline {
         SSC_URL = "${params.SSC_URL ?: 'http://ssc.mfdemouk.com'}" // URL of Fortify Software Security Center
         SSC_USERNAME = "${params.SSC_USERNAME ?: 'admin'}" // Default user login for Fortify Software Security Center
         SSC_PARENT_RELEASE = "${params.SSC_MASTER_RELEASE ?: 'master'}" // Default Parent Release, e.g. "master" to copy from when creating new version
-        SCANCENTRAL_URL "${params.SCANCENTRAL_URL ?: 'http://scancentral.mfdemouk.com/api'}" // URL of ScanCentral DAST API
+        SCANCENTRAL_URL = "${params.SCANCENTRAL_URL ?: 'http://scancentral.mfdemouk.com/api'}" // URL of ScanCentral DAST API
         SCANCENTRAL_USERNAME = "${params.SCANCENTRAL_USERNAME ?: 'admin'}" // Default user login for ScanCentral DAST API
         SCANCENTRAL_CICD_TOKEN = "${params.SCANCENTRAL_CICD_TOKEN ?: 'a8f7b472-fa21-4303-9a5b-90a6976afbc7'}" // Default ScanCentral CICD TOKEN
 	}
