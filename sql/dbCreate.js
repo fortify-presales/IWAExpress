@@ -7,9 +7,9 @@ const dbConfig = config.get('App.dbConfig');
 const connection = mysql.createConnection({
     host: dbConfig.host,
     port: dbConfig.port,
-    user: 'root',
-    password: 'root',
-    database: '',
+    user: dbConfig.user,
+    password: dbConfig.password,
+    database: dbConfig.database,
     multipleStatements: true
 });
 

@@ -86,16 +86,18 @@ router.post('/backup', function(request, response) {
 */
 
 router.post('/upload-image', function(request, response) {
-    fs.writeFileSync('/tmp/upload/${request.body.name}');
+    const filename = path.basename(request.body.name)
+
+    fs.writeFileSync('/tmp/upload/${filename}');
 
     // convert the image to correct size and format
     convert({ 
-        file: '/tmp/upload/${request.body.name}',  
+        file: '/tmp/upload/${filename}',  
         width: 600, 
         height: 400, 
         type: 'jpeg'
     }).then(response => {
-        exec('rm /tmp/upload/${request.body.name}');
+        exec('rm /tmp/upload/${filename}');
         return response.sendStatus(200);
     }).catch(error => {
         return response.sendStatus(500);
