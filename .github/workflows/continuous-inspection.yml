@@ -45,7 +45,7 @@ jobs:
       - name: npm install, build, and test
         run: |
           npm install
-          MOCHA_FILE=./github-test-results.xml ./node_modules/.bin/mocha tests/** --reporter mocha-junit-reporter
+          MOCHA_FILE=./github-test-results.xml ./node_modules/.bin/mocha src/tests/** --reporter mocha-junit-reporter
 
   FoD-SAST-Scan:
     # Use the appropriate runner for building your source code.
