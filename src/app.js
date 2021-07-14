@@ -13,6 +13,7 @@ const createError = require('http-errors');
 const debug = require('debug');
 const cors = require('cors');
 const favicon = require('serve-favicon');
+const fs = require('fs');
 const swaggerJSDoc = require('swagger-jsdoc');
 const swaggerUI = require('swagger-ui-express');
 
@@ -36,9 +37,16 @@ app.use(logger('common'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(express.static(__dirname + '/public'));
-app.use('/jquery', express.static(__dirname + '/../node_modules/jquery/dist/'));
-app.use('/bootstrap', express.static(__dirname + '/../node_modules/bootstrap/dist/'));
-app.use('/font-awesome', express.static(__dirname + '/../node_modules/font-awesome/'));
+let nmPath = '';
+if (fs.existsSync('./src')) { // src only exists in development
+    nmPath = '/../node_modules';
+} else {
+    console.log('Found ../node_modules');
+    nmPath = '/node_modules'
+}
+app.use('/jquery', express.static(__dirname + nmPath + '/jquery/dist/'));
+app.use('/bootstrap', express.static(__dirname + nmPath + '/bootstrap/dist/'));
+app.use('/font-awesome', express.static(__dirname + nmPath + '/font-awesome/'));
 app.use(favicon(__dirname + '/public/favicon.ico'));
 
 app.use(session({
