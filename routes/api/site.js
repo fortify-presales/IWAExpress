@@ -97,7 +97,11 @@ router.post('/upload-image', function(request, response) {
         height: 400, 
         type: 'jpeg'
     }).then(response => {
-        exec('rm /tmp/upload/${filename}');
+        fs.unlink('/tmp/upload/${filename}', (err) => {
+            if (err) {
+                throw err;
+            }
+        });
         return response.sendStatus(200);
     }).catch(error => {
         return response.sendStatus(500);
