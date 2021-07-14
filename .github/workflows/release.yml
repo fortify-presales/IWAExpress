@@ -12,14 +12,14 @@ jobs:
   # "build"
   build-and-run:
     # The type of runner that the job will run on
-    runs-on: self-hosted
+    runs-on: [self-hosted, linux, production]
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Ensure all files are owned by actions-runner
       - name: chown
         run: |
-          sudo chown -R $USER:$USER /opt/actions-runner/_work/IWAExpress
+          sudo chown -R $USER:$USER /home/ubuntu/actions-runner/_work/IWAExpress
 
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
