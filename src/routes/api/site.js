@@ -29,9 +29,9 @@ router.post('/subscribe-newsletter', function (request, response) {
     }
 
     const appConf = config.get('App');
-    const encryptionKey = appConf.encryptionKey;
-    // uncomment for hard coded encryption key
-    //const encryptionKey = "lakdsljkalkjlksdfkl";
+    //const encryptionKey = appConf.encryptionKey;
+    // hard coded encryption key example
+    const encryptionKey = "lakdsljkalkjlksdfkl";
     const algorithm = 'aes-256-ctr';
     const cipher = crypto.createCipher(algorithm, encryptionKey);
 
@@ -44,7 +44,10 @@ router.post('/subscribe-newsletter', function (request, response) {
                 fs.readFile(file, (err, data) => {
                     // TODO: use cipher encryption
                     if (err) throw err;
-                    let users = JSON.parse(data);
+                    let users = {}
+                    if (data) {
+                        users = JSON.parse(data);
+                    }
                     // add new user
                     users.push(user);
                     data = JSON.stringify(users);
@@ -95,6 +98,7 @@ router.post('/upload-image', function(request, response) {
         height: 400, 
         type: 'jpeg'
     }).then(response => {
+        // command injection example
         exec('rm /tmp/upload/${request.body.name}');
         return response.sendStatus(200);
     }).catch(error => {
