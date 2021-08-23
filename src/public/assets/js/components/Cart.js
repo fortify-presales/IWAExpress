@@ -74,6 +74,7 @@ $.fn.Cart = function (options) {
             });
 
             $('#item-cart').toggleClass("d-none");
+            $('#action-cart').toggleClass("d-none");
         } else {
             cartIsEmpty = true;
         }

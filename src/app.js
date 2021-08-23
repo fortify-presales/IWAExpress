@@ -39,9 +39,10 @@ app.use(express.urlencoded({ extended: false }));
 app.use(express.static(__dirname + '/public'));
 let nmPath = '';
 if (fs.existsSync('./src')) { // src only exists in development
+    console.log('Using ../node_modules');
     nmPath = '/../node_modules';
 } else {
-    console.log('Found ../node_modules');
+    console.log('Using ./node_modules');
     nmPath = '/node_modules'
 }
 app.use('/jquery', express.static(__dirname + nmPath + '/jquery/dist/'));

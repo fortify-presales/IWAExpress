@@ -1,6 +1,6 @@
 {
   "name": "iwaexpress",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "description": "IWAExpress (Insecure Web App) Pharmacy Direct an insecure NodeJS/Express web application for use in Micro Focus demonstrations",
   "main": "src/app.js",
   "private": true,

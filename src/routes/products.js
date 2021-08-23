@@ -3,7 +3,6 @@ const express = require('express');
 const router = express.Router();
 const connection  = require('../lib/db');
 const config = require('config');
-
 const appConf = config.get('App');
 
 // product home

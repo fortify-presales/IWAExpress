@@ -363,3 +363,5 @@ MigrationBackup/
 FodyWeavers.xsd
 /IWAExpress.pdf
 *.fpr
+/.idea
+/email-db.json

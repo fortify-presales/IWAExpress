@@ -1,7 +1,12 @@
-INSERT INTO accounts (id, username, password, email)
-VALUES (UUID_TO_BIN(UUID()), "user1", "password", "user1@localhost.com");
-INSERT INTO accounts (id, username, password, email)
-VALUES (UUID_TO_BIN(UUID()), "user2", "password", "user2@localhost.com");
+INSERT INTO accounts (id, username, password, email, mobile)
+VALUES (UUID_TO_BIN(UUID()), 'user1', 'password', 'user1@localhost.com', '07799123456');
+INSERT INTO accounts (id, username, password, email, mobile)
+VALUES (UUID_TO_BIN(UUID()), 'user2', 'password', 'user2@localhost.com', '07788123123');
+
+SELECT @account_id:=id FROM accounts WHERE username = "user1";
+
+INSERT INTO payment_cards (number, expiry_month, expiry_year, type, preferred, account)
+VALUES ('1234123412341234', 1, 2024, 1, 1, @account_id);
 
 INSERT INTO products (id, code, name, rating, summary, description, image, price, in_stock, time_to_stock, available)
 VALUES (UUID_TO_BIN(UUID()), 'SWA234-A568-00010', 'Solodox 750', 4,
