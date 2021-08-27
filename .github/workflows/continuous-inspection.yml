@@ -67,8 +67,8 @@ jobs:
       - name: Extract branch name
         shell: bash
         run: |
-          echo "Running on $GITHUB_EVENT"
-          if [[ "$GITHUB_EVENT" == "pull_request" ]]
+          echo "Running on ${{ github.event.name }}"
+          if [[ "${{ github.event.name }}" == "pull_request" ]]
           then
             echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
           else
