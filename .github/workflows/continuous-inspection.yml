@@ -149,7 +149,7 @@ jobs:
             FOD_RELEASE_ID: ${{ steps.verify_fod_release.outputs.FOD_RELEASE_ID }}
             FOD_URL: "https://emea.fortify.com/"
             FOD_API_URL: "https://api.emea.fortify.com/"
-            FOD_UPLOADER_OPTS: "-ep 2 -pp 0 -I 1 -apf"
+            FOD_UPLOADER_OPTS: "-ep 2 -pp 2 -I 1 -apf"
             FOD_UPLOADER_NOTES: 'Triggered by GitHub Actions (${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})'
 
       # Pull SAST issues from Fortify on Demand and generate GitHub-optimized SARIF output
