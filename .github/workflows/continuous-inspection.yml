@@ -70,7 +70,7 @@ jobs:
           if ("$Env:GITHUB_REF" -clike 'refs/pull/*') {
             $BranchName = $Env:GITHUB_REF -replace 'refs/pull/', ''
             $PRNumber = $BranchName -replace '/merge', ''
-            $BranchName = $Env:SOURCE_BRANCH + "#" + $PRNumber
+            $BranchName = "[PR]" + $Env:SOURCE_BRANCH + "#" + $PRNumber
             Write-Output "::set-output name=branch::$BranchName"
           } else {
             $BranchName = $Env:GITHUB_REF -replace 'refs/heads/', ''
