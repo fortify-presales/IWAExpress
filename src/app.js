@@ -150,6 +150,7 @@ const swaggerDocs = swaggerJSDoc(swaggerOptions);
 app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerDocs, { explorer: true }));
 app.use('/api/site', require('./routes/api/site'));
 app.use('/api/products', require('./routes/api/products'));
+app.use('/api/cards', require('./routes/api/cards'));
 app.use('/api/users', require('./routes/api/users'));
 app.use('/api/cart', require('./routes/api/cart'));
 

@@ -71,7 +71,7 @@ router.get('/', function (request, response) {
     const keywords = (request.query.keywords ? request.query.keywords : "");
     const limit = (request.query.limit ? request.query.limit : 10);
     console.log(`INFO: Searching for keywords: "${keywords}" - limit to ${limit} users`);
-    return response.sendStatus(201);
+    return response.sendStatus(200);
 });
 
 /**

@@ -10,15 +10,14 @@ router.get('/', function(request, response) {
     const username = request.session.username;
     console.log(`INFO: Viewing user account for: ${username}`);
 
-    connection.query('SELECT * FROM accounts WHERE username = "' + username + '"', function (error, results, fields) {
-        console.log(results);
+    connection.query('SELECT BIN_TO_UUID(id) AS id, username, password, email, mobile FROM accounts WHERE username = "' + username + '"', function (error, results, fields) {
             if (results != undefined && results.length > 0) {
                 response.render('account/index', { 
                     title: appConf.name + " :: Account",
                     account: results[0]
                 });
             } else {
-                request.flash('error', 'Cannot view username: ' + username);
+                request.flash('error', 'Cannot view account for username: ' + username);
                 response.redirect('/');
             }		
     });

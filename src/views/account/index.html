@@ -52,12 +52,21 @@
                     <h1 class="h3">Payment Cards</h1>
                 </div>
 
-                <div id="payment-cards"></div>
-
-                <p>
-                    <button type="submit" class="btn btn-md height-auto px-4 py-3 btn-primary" onclick="window.history.go(-1);">Back</button>
-                </p>
             </div>
+
+            <div>
+              <form>
+                  <div class="form-group row">
+                    <div id="user-cards"></div>
+                  </div>
+              </form>
+            </div>      
+
+            <div>
+              <p>
+                <button type="submit" class="btn btn-md height-auto px-4 py-3 btn-primary" onclick="window.history.go(-1);">Back</button>
+              </p>
+            </div>  
 
         </div>
     </div>
@@ -68,6 +77,14 @@
     
 <% include ../include/scripts.html %>
 
+<script src="/assets/js/components/UserCards.js"></script>
+<script type="text/javascript">
+  (function ($) {
+      $(document).ready(function () {
+        $('#user-cards').UserCards({ userid: "<%= account.id %>" });
+      });
+  })(jQuery);
+</script>
 
 </body>
 

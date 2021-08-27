@@ -18,20 +18,20 @@ CREATE TABLE accounts
     unique key `mobile` (`mobile`)
 );
 
-CREATE TABLE payment_cards 
+CREATE TABLE cards 
 (
-    `number`        varchar(255)    not null,
+    `id`            binary(16)      not null,
+    `issuer`        varchar(255)    not null,
+    `number`        varchar(255)    not null,    
+    `name`          varchar(255)    not null,
     `address`       varchar(255)    default null,
     `country`       varchar(255)    default null,
-    `county`        varchar(255)    default null,
     `expiry_month`  int(11)         not null,
     `expiry_year`   int(11)         not null,
-    `postal_code`   varchar(255)    default null,
     `preferred`     bit(1)          default 0 not null,
-    `state`         varchar(255)    default null,
-    `type`          varchar(255)    default null,
     `account`       binary(16)      default null,
-    primary key (`number`),
+    primary key (`id`),
+    unique key `number` (`number`),
     key (`account`),
     constraint foreign key (`account`) references `accounts` (`id`)
 );

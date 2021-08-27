@@ -5,8 +5,10 @@ VALUES (UUID_TO_BIN(UUID()), 'user2', 'password', 'user2@localhost.com', '077881
 
 SELECT @account_id:=id FROM accounts WHERE username = "user1";
 
-INSERT INTO payment_cards (number, expiry_month, expiry_year, type, preferred, account)
-VALUES ('1234123412341234', 1, 2024, 1, 1, @account_id);
+INSERT INTO cards (id, issuer, number, name, address, country, expiry_month, expiry_year, preferred, account)
+VALUES (UUID_TO_BIN(UUID()), 'Visa', '4497929501416889', 'Wendy Hill', 'White Street 91', 'United Kingdom', 02, 2027, 1, @account_id);
+INSERT INTO cards (id, issuer, number, name, address, country, expiry_month, expiry_year, preferred, account)
+VALUES (UUID_TO_BIN(UUID()), 'American Express', '340530149604402', 'Donald Turner', 'Ann Street 90', 'United Kingdom', 09, 2024, 0, @account_id);
 
 INSERT INTO products (id, code, name, rating, summary, description, image, price, in_stock, time_to_stock, available)
 VALUES (UUID_TO_BIN(UUID()), 'SWA234-A568-00010', 'Solodox 750', 4,
