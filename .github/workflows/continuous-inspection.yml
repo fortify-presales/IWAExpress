@@ -67,7 +67,7 @@ jobs:
       - name: Extract branch name
         shell: pwsh
         run: |
-          if ("${Env:GITHUB_EVENT}" -eq "pull_request") {
+          if ("$Env:GITHUB_REF" -clike 'refs/pull/*') {
             $BranchName = $Env:GITHUB_REF -replace 'refs/pull/', ''
             $PRNumber = $BranchName -replace '/merge', ''
             $BranchName = $Env:SOURCE_BRANCH + "#" + $PRNumber
