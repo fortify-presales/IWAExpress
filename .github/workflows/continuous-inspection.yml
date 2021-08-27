@@ -69,10 +69,10 @@ jobs:
         run: |
           Write-Output "Running on $Env:GITHUB_EVENT"
           if ($Env:GITHUB_EVENT -eq "pull_request") {
-            $BranchName = $Env:GITHUB_REF -replace 'refs/heads/', ''
+            $BranchName = "pr-" + $Env:BASE_BRANCH
             Write-Output "::set-output name=branch::$BranchName"
           } else {
-            $BranchName = "pr-" + $Env:BASE_BRANCH
+            $BranchName = $Env:GITHUB_REF -replace 'refs/heads/', ''
             Write-Output "::set-output name=branch::$BranchName"
           }  
         env:
