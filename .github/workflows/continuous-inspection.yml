@@ -65,17 +65,17 @@ jobs:
 
       # Get the branch name - push
       - name: Extract branch name
-        shell: bash
+        shell: pwsh
         run: |
-          echo "Running on ${{ github.event.name }}"
-          if [[ "${{ github.event.name }}" == "pull_request" ]]
-          then
-            echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
-          else
-            echo ##[set-output name=branch;]$(echo merge-${BASE_BRANCH})
-          fi
+          Write-Output "Running on $Env:GITHUB_EVENT"
+          if ($Env:GITHUB_EVENT -eq "pull_request") {
+            $BranchName = $Env:GITHUB_REF -replace 'refs/heads/', ''
+            Write-Output "::set-output name=branch::$BranchName"
+          } else {
+            $BranchName = "pr-" + $Env:BASE_BRANCH
+            Write-Output "::set-output name=branch::$BranchName"
+          }  
         env:
-          GITHUB_EVENT: ${{ github.event.name }}
           BASE_BRANCH: ${{ github.base_ref }}  
         id: extract_branch
 
