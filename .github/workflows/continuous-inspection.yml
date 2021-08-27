@@ -71,13 +71,13 @@ jobs:
         id: extract_branch
 
       # Get the branch name - pull request
-      - name: Extract branch name (pr)
-        if: github.event_name == 'pull_request'
-        shell: bash
-        run: echo "##[set-output name=branch;]$(echo merge-${BASE_BRANCH})"
-        env:
-          BASE_BRANCH: ${{ github.base_ref }}
-        id: extract_branch  
+      #- name: Extract branch name (pr)
+      #  if: github.event_name == 'pull_request'
+      #  shell: bash
+      #  run: echo "##[set-output name=branch;]$(echo merge-${BASE_BRANCH})"
+      #  env:
+      #    BASE_BRANCH: ${{ github.base_ref }}
+      #  id: extract_branch  
 
       # Verify if FoD release with name matching branch name exists and if not create it
       # TODO: Update ENV variables for your application and create the necessary GitHub Secrets.  Helpful hints:
