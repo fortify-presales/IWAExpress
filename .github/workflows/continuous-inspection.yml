@@ -63,30 +63,22 @@ jobs:
         with:
             java-version: 1.8
 
-      # Get the branch name - push
+      # Get the branch name or pr number
       - name: Extract branch name
         shell: pwsh
         run: |
-          Write-Output "Running on ${Env:GITHUB_EVENT}"
           if ("${Env:GITHUB_EVENT}" -eq "pull_request") {
-            $BranchName = "pr-" + $Env:BASE_BRANCH
+            $BranchName = $Env:GITHUB_REF -replace 'refs/pull/', ''
+            $PRNumber = $BranchName -replace '/merge', ''
+            $BranchName = $Env:SOURCE_BRANCH + "#" + $PRNumber
             Write-Output "::set-output name=branch::$BranchName"
           } else {
             $BranchName = $Env:GITHUB_REF -replace 'refs/heads/', ''
             Write-Output "::set-output name=branch::$BranchName"
           }  
         env:
-          BASE_BRANCH: ${{ github.base_ref }}  
+          SOURCE_BRANCH: ${{ github.head_ref }}  
         id: extract_branch
-
-      # Get the branch name - pull request
-      #- name: Extract branch name (pr)
-      #  if: github.event_name == 'pull_request'
-      #  shell: bash
-      #  run: echo "##[set-output name=branch;]$(echo merge-${BASE_BRANCH})"
-      #  env:
-      #    BASE_BRANCH: ${{ github.base_ref }}
-      #  id: extract_branch  
 
       # Verify if FoD release with name matching branch name exists and if not create it
       # TODO: Update ENV variables for your application and create the necessary GitHub Secrets.  Helpful hints:
