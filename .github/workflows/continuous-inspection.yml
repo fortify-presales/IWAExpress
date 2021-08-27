@@ -204,7 +204,9 @@ jobs:
           Write-Output "Low Issues:       $IssueCountLow"
           Write-Output "Total Issues:     $TotalIssues"
           # Example of using issue data
-          #if ($StarRating -lt 2) { exit 1 } # Fail if less than 2 star rating - set to your own criteria
+          if ("${Env:GITHUB_EVENT}" -eq "pull_request") {
+            if ($StarRating -lt 2) { exit 1 } # Fail if less than 2 star rating - set to your own criteria
+          }  
         env:
           FOD_TENANT: ${{ secrets.FOD_TENANT }}
           FOD_USER: ${{ secrets.FOD_USER }}
