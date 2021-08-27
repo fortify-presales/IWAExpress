@@ -67,8 +67,8 @@ jobs:
       - name: Extract branch name
         shell: pwsh
         run: |
-          Write-Output "Running on $Env:GITHUB_EVENT"
-          if ($Env:GITHUB_EVENT -eq "pull_request") {
+          Write-Output "Running on ${Env:GITHUB_EVENT}"
+          if ("${Env:GITHUB_EVENT}" -eq "pull_request") {
             $BranchName = "pr-" + $Env:BASE_BRANCH
             Write-Output "::set-output name=branch::$BranchName"
           } else {
